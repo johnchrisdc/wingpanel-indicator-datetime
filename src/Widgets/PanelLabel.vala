@@ -66,6 +66,90 @@ public class DateTime.Widgets.PanelLabel : Gtk.Grid {
         date_label.label = time_manager.format (date_format);
 
         string time_format = Granite.DateTime.get_default_time_format (time_manager.is_12h, clock_show_seconds);
-        time_label.label = time_manager.format (time_format);
+        time_label.label =  convert(int.parse(time_manager.format ("%H"))) + " " + convert(int.parse(time_manager.format ("%M")));
     }
+
+    private string[] tensNames = {
+            "o'",
+            " Ten",
+            " Twenty",
+            " Thirty",
+            " Forty",
+            " Fifty",
+            " Sixty",
+            " Seventy",
+            " Eighty",
+            " Ninety"
+      };
+
+      private string[] numNames = {
+              "",
+              " One",
+              " Two",
+              " Three",
+              " Four",
+              " Five",
+              " Six",
+              " Seven",
+              " Eight",
+              " Nine",
+              " Ten",
+              " Eleven",
+              " Twelve",
+              " Thirteen",
+              " Fourteen",
+              " Fifteen",
+              " Sixteen",
+              " Seventeen",
+              " Eighteen",
+              " Nineteen"
+      };
+
+      public string convert(int number) {
+
+        if (number == 0) { return "zero"; }
+
+        string prefix = "";
+
+        if (number < 0) {
+            number = -number;
+            prefix = "negative";
+        }
+
+        string current = "";
+        int place = 0;
+
+        do {
+            int n = number % 1000;
+            if (n != 0){
+                string s = convertLessThanOneThousand(n);
+                current = s;
+            }
+            place++;
+            number /= 1000;
+        } while (number > 0);
+
+        return (prefix + current);
+    }
+
+
+      private string convertLessThanOneThousand(int number) {
+        string current;
+
+        if (number % 100 < 20){
+            current = numNames[number % 100];
+            number /= 100;
+        }
+        else {
+            current = numNames[number % 10];
+            number /= 10;
+
+            current = tensNames[number % 10] + current;
+            number /= 10;
+        }
+        if (number == 0) return current;
+        return numNames[number] + " hundred" + current;
+    }
+
+
 }
